@@ -53,6 +53,7 @@ app.get('/users/:uid', (req, res, next) => {
 
 app.get('/users/:uid/groups', (req, res, next) => {
 	let name;
+	//find name matching uid
 	parsePasswdFile.parsePasswd().then((response) => {
 		let uid = req.params.uid;
 		response = response.find((entry) => {
@@ -61,18 +62,16 @@ app.get('/users/:uid/groups', (req, res, next) => {
 		if (response != undefined){
 				name = response['name'];
 		}
-	}).catch((err) =>{
-		next(err);
-	});
-
-	parseGroupFile.parseGroup().then((response) => {
-			console.log(response);
+	//find groups with name as a member
+	}).then((call) => {
+			parseGroupFile.parseGroup().then((response) => {
 			response = response.filter((entry) => {
 				return entry['members'].includes(name)
 			});
 			res.send(response);
-	}).catch((err) =>{
+	}).catch((err) => {
 		next(err);
+		});
 	});
 });
 
