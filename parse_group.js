@@ -1,3 +1,4 @@
+//parse /etc/group file
 const util = require("util");
 const fs = require("fs");
 const config = require('./config.js');
