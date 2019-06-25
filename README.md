@@ -14,7 +14,7 @@ To use / commands (same as outlined in assignment instructions):
 1. return all users: 
    'http://localhost:3000/users' 
 2. return all users with matching parameters: 
-   'http://localhost:3000/users/query?[name=<nq>][&uid=<uid>][&gid=<gid>][&comment=<cq>][&home=<hq>][&shell=<sq>]'
+   `http://localhost:3000/users/query?[name=<nq>][&uid=<uid>][&gid=<gid>][&comment=<cq>][&home=<hq>][&shell=<sq>]`
 3. return user with uid: 
    http://localhost:3000/<uid> 
 4. return groups a user is in: 
