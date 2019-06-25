@@ -3,7 +3,7 @@ Hi! Welcome to my implementation of Passwd as a service.
 Setup: 
 1. Type in terminal the following command: `git clone https://github.com/y6mo/brain_corp.git`
 2. cd into the cloned directory: `cd brain_corp`
-3. install node if you do not have it: https://nodejs.org/en/download/
+3. install node if you don't have it: https://nodejs.org/en/download/
 4. install dependencies: `npm install`
 
 To run:
