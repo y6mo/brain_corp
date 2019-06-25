@@ -7,7 +7,7 @@ Setup:
 
 To run:
 1. Type in terminal: `node app.js`
-2. go to browser and use link: 'http://localhost:3000/' (* NOTE: this home link has no route)
+2. go to browser and use link: http://localhost:3000/ (* NOTE: this home link has no route)
 3. use http requests below
 
 To use / commands (same as outlined in assignment instructions):
