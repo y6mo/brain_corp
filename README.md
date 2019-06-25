@@ -1,4 +1,4 @@
-Hi! Welcome to my implementation on Passwd as a service. 
+Hi! Welcome to my implementation of Passwd as a service. 
 
 Setup: 
 1. Type in terminal the following command: git clone https://github.com/y6mo/brain_corp.git
