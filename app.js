@@ -1,19 +1,18 @@
 const express = require('express')
 const app = express()
 
-var parsePasswdFile = require("./parse_passwd.js");
-var parseGroupFile = require("./parse_group.js");
+const parsePasswdFile = require("./parse_passwd.js");
+const parseGroupFile = require("./parse_group.js");
 
-
-app.get('/users', (req,res) => {
+app.get('/users', (req, res, next) => {
 	parsePasswdFile.parsePasswd().then((response) => {
 		res.send(response);
 	}).catch((err) =>{
-		console.log("error test");
-	})
+		next(err);
+	});
 });
 
-app.get('/users/query', (req,res) => {
+app.get('/users/query', (req, res, next) => {
 	parsePasswdFile.parsePasswd().then((response) => {
 		const {name, uid, gid, comment, home, shell} = req.query;
 		let filter = {
@@ -24,152 +23,124 @@ app.get('/users/query', (req,res) => {
 			home: home,
 			shell: shell
 		};
-
-		//console.log(response);
-		response = response.filter(x => {
+		response = response.filter(entry => {
 			for (var parameter in filter){
-				if (filter[parameter] !== undefined && filter[parameter] !== x[parameter]) return false;
+				if (filter[parameter] !== undefined && filter[parameter] !== entry[parameter]) return false;
 			}
 			return true;
 		});
 		res.send(response);
 	}).catch((err) =>{
-		console.log("error test");
+		next(err);
 	});
 });
 
-app.get('/users/:id', (req,res) => {
+app.get('/users/:uid', (req, res, next) => {
 	parsePasswdFile.parsePasswd().then((response) => {
-		let id = req.params.id;
-		//console.log(id);
-		if (typeof id !== 'undefined'){
-			console.log("inside");
-			response = response.find((x) => {
-				return x['uid'] === id;
-			});
-			res.send(response);
+		let uid = req.params.uid;
+		response = response.find((entry) => {
+			return entry['uid'] === uid;
+		});
+		if (response === undefined){
+			res.sendStatus(404);
 		} else {
-			console.log("error :id");
+			res.send(response);
 		}
 	}).catch((err) =>{
-		console.log("error test");
-	})
+		next(err);
+	});
 });
 
-
-app.get('/users/:id/groups', (req,res) => {
-
+app.get('/users/:uid/groups', (req, res, next) => {
 	let name;
-
 	parsePasswdFile.parsePasswd().then((response) => {
-		let id = req.params.id;
-		if (typeof id !== 'undefined'){
-			console.log("inside");
-			response = response.find((x) => {
-				return x['uid'] === id;
-			});
-			name = response['name'];
-			console.log(name);
-		} else {
-			console.log("error :id");
+		let uid = req.params.uid;
+		response = response.find((entry) => {
+			return entry['uid'] === uid;
+		});
+		if (response != undefined){
+				name = response['name'];
 		}
 	}).catch((err) =>{
-		console.log("error test");
-	})
+		next(err);
+	});
 
-	let test;
 	parseGroupFile.parseGroup().then((response) => {
-		if (name !== undefined){
-			response = response.filter((x) => {
-				return x['members'].includes(name)
+			console.log(response);
+			response = response.filter((entry) => {
+				return entry['members'].includes(name)
 			});
 			res.send(response);
-		} else {
-			console.log("error :id 2");
-		}
 	}).catch((err) =>{
-		console.log("error test");
-	})
-
+		next(err);
+	});
 });
 
-app.get('/groups', (req,res) => {
+
+app.get('/groups', (req, res, next) => {
 	parseGroupFile.parseGroup().then((response) => {
 		res.send(response);
 	}).catch((err) =>{
-		console.log("error test");
-	})
+		next(err);
+	});
 });
 
-app.get('/groups/query', (req,res) => {
+app.get('/groups/query', (req, res, next) => {
 	parseGroupFile.parseGroup().then((response) => {
-
 		const {name, gid, member} = req.query;
 		let filter = {
 			name: name,
 			gid: gid,
 		};
-		response = response.filter(x => {
+		response = response.filter(entry => {
 			for (var parameter in filter){
-				if (filter[parameter] !== undefined && filter[parameter] !== x[parameter]) return false;
+				if (filter[parameter] !== undefined && filter[parameter] !== entry[parameter]) return false;
 			}
 			return true;
 		});
 
 		if (Array.isArray(member)){
-			console.log("array");
-			console.log("member:" + member)
-
-			response = response.filter(x => {
-				let arr = x['members'].split(',');
-				let bool = true;
-
-				for (let x of member){
-					if(!arr.includes(x)){
+			response = response.filter(entry => {
+				let arr = entry['members'].split(',');
+				for (let entry of member){
+					if(!arr.includes(entry)){
 						return false;
 					}
 				}
-				/*
-				member.forEach(x => {
-					if(!arr.includes(x)){
-						bool = false;
-					}
-				});
-				*/
 				return true;
 			});
-
 		} else {
-			console.log("not array");
-			response = response.filter(x => {
-				console.log(member);
-				return member === undefined || x['members'].includes(member)
+			response = response.filter(entry => {
+				return member === undefined || entry['members'].includes(member);
 			});
-			console.log("after");
-			console.log(response);
 		}
-
 		res.send(response);
 	}).catch((err) =>{
-		console.log("error test");
+		next(err);
 	});
 });
 
-
-app.get('/groups/:gid', (req,res) => {
+app.get('/groups/:gid', (req, res, next) => {
 	parseGroupFile.parseGroup().then((response) => {
 		let gid = req.params.gid;
-		if (typeof gid !== 'undefined'){
-			response = response.find((x) => {
-				return x['gid'] === gid;
-			});
-			res.send(response);
+		response = response.find((entry) => {
+			return entry['gid'] === gid;
+		});
+		if (response === undefined){
+			res.sendStatus(404);
 		} else {
-			console.log("error :id");
+			res.send(response);
 		}
 	}).catch((err) =>{
-		console.log("error test");
-	})
+		next(err);
+	});
+});
+
+//custom error handling
+app.use(function (err, req, res, next){
+	let errorString = "Error code: " + err.code + "\nError message: " + err.message;
+	console.log(errorString);
+  res.end(errorString);
 });
 
 const port = process.env.PORT || 3000;

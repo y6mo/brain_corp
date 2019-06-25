@@ -2,36 +2,24 @@ const util = require("util");
 const fs = require("fs");
 const config = require('./config.js');
 
-console.log("config :" + config.groupPath);
-console.log("config :" + '/etc/group');
-
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 
 exports.parseGroup = async function() {
-
-let v;
+let fileContents;
   try {
-    v = await readFile(config.groupPath, "utf-8")
-  } catch(e) {
+    fileContents = await readFile(config.groupPath, 'utf-8')
+  } catch(err) {
+    if (err.code === 'ENOENT'){
+      console.log('File not found. Check path of group file.');
+    } else {
+      console.log('Error message: ' + err.message);
+    }
+    throw err;
   }
-  return processData(v)
-  /*
-  console.log("printing");
-  const fileContent = await readFile('/etc/passwd', "utf-8")
-  .then(response => processData(response))
-  .catch(err =>
-    console.log("error")
-  );
-  return fileContent
-  */
+  return processData(fileContents)
 }
 
-//parsePasswd()
-//.then(response => console.log(processData(response)))
-//.catch(err => console.log("An error occurred", err));
-
-//parsePasswd();
 function processData(data){
   if (typeof data !== 'string') {
     throw new Error('Data not string error');
