@@ -26,5 +26,8 @@ To use / commands (same as outlined in assignment instructions):
 7. return group with gid:
    http://localhost:3000/groups/<gid>
    
+To test: 
+1. Type in terminal: npm test
+   
    
 
